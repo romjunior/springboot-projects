@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: rabbit-cluster
+  threads:
+    virtual:
+      enabled: true
+  rabbitmq:
+    addresses: localhost:5673,localhost:5674
+    username: ${RABBITMQ_DEFAULT_USER:guest}
+    password: ${RABBITMQ_DEFAULT_PASS:guest}
+    virtual-host: ${RABBITMQ_DEFAULT_VHOST:/}
+    queues:
+      cluster-queue: cluster-queue
+      cluster-exchange: cluster-exchange
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,httptrace
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
