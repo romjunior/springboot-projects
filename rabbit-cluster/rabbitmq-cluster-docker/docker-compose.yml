@@ -1,5 +1,19 @@
 version: '3'
 services:
+  haproxy:
+    image: haproxy:2.8
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+      - "8404:8404"     # HAProxy Stats
+    volumes:
+      - ${PWD}/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - rabbitmq1
+      - rabbitmq2
+      - rabbitmq3
+    networks:
+      - rabbitmq
   rabbitmq1:
     image: rabbitmq:3-management
     hostname: rabbitmq1
@@ -11,9 +25,7 @@ services:
       - ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
       - ${PWD}/cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
     entrypoint: /usr/local/bin/cluster-entrypoint.sh
-    ports:
-      - "15672:15672"
-      - "5672:5672"
+    # ports removed - access via load balancer
     networks:
       - rabbitmq
 
@@ -28,9 +40,7 @@ services:
       - ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
       - ${PWD}/cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
     entrypoint: /usr/local/bin/cluster-entrypoint.sh
-    ports:
-      - "15673:15672"
-      - "5673:5672"
+    # ports removed - access via load balancer
     networks:
       - rabbitmq
 
@@ -45,9 +55,7 @@ services:
       - ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
       - ${PWD}/cluster-entrypoint.sh:/usr/local/bin/cluster-entrypoint.sh
     entrypoint: /usr/local/bin/cluster-entrypoint.sh
-    ports:
-      - "15674:15672"
-      - "5674:5672"
+    # ports removed - access via load balancer
     networks:
       - rabbitmq
 
