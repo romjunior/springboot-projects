@@ -1,0 +1,175 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.1.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.estudo'
+version = '0.0.1-SNAPSHOT'
+
+ext {
+	set('springAiVersion', '2.0.1')
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+	testImplementation 'org.springframework.ai:spring-ai-rag'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform {
+		excludeTags 'rag-evaluation', 'rag-evaluation-detailed'
+	}
+}
+
+tasks.register('evaluateRag', Test) {
+	group = 'verification'
+	description = 'Runs live RAG retrieval and answer evaluations against the CareFlow API.'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+	outputs.upToDateWhen { false }
+	doFirst {
+		def selectedCases = providers.gradleProperty('evaluationCaseIds')
+			.orElse(providers.environmentVariable('EVALUATION_CASE_IDS'))
+			.getOrElse('')
+		systemProperty 'evaluation.case-ids', selectedCases
+	}
+	useJUnitPlatform {
+		includeTags 'rag-evaluation'
+	}
+	testLogging {
+		events 'passed', 'failed', 'skipped'
+		showStandardStreams = true
+	}
+	finalizedBy 'generateEvaluationDashboard'
+}
+
+tasks.register('evaluateRagDetailed', Test) {
+	group = 'verification'
+	description = 'Runs live RAG retrieval and detailed answer evaluations with mandatory feedback.'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+	outputs.upToDateWhen { false }
+	doFirst {
+		def selectedCases = providers.gradleProperty('evaluationCaseIds')
+			.orElse(providers.environmentVariable('EVALUATION_CASE_IDS'))
+			.getOrElse('')
+		systemProperty 'evaluation.case-ids', selectedCases
+	}
+	useJUnitPlatform {
+		includeTags 'rag-evaluation-detailed'
+	}
+	testLogging {
+		events 'passed', 'failed', 'skipped'
+		showStandardStreams = true
+	}
+	finalizedBy 'generateDetailedEvaluationDashboard'
+}
+
+def registerEvaluationDashboard = { String evaluationTaskName, String dashboardTaskName, String dashboardDirectory,
+		String evaluatorLabel, String evaluatorNote ->
+	tasks.register(dashboardTaskName) {
+		group = 'verification'
+		description = "Builds a standalone HTML dashboard from ${evaluationTaskName} results."
+		def xmlDirectory = layout.buildDirectory.dir("test-results/${evaluationTaskName}")
+		def dashboardFile = layout.buildDirectory.file("reports/${dashboardDirectory}/index.html")
+		inputs.dir(xmlDirectory)
+		inputs.file(layout.projectDirectory.file('src/main/resources/dashboard/evaluation-dashboard.html'))
+		outputs.file(dashboardFile)
+		doLast {
+			def resultFiles = fileTree(xmlDirectory).matching { include 'TEST-*.xml' }.files.sort { it.name }
+			def cases = []
+			resultFiles.each { resultFile ->
+				def report = new groovy.xml.XmlSlurper(false, false).parse(resultFile)
+				def suiteOutput = ([report.'system-out'.text()] + report.testcase.collect { it.'system-out'.text() }).join('\n')
+				def relevancyResults = [:]
+				suiteOutput.eachLine { line ->
+					def logParts = line.trim().split('\\|', 5)
+					if (logParts.length == 5 && logParts[0].endsWith('RELEVANCY_RESULT')) {
+						relevancyResults[logParts[1]] = [
+							pass: logParts[2].replaceFirst('^pass=', ''),
+							score: logParts[3].replaceFirst('^score=', ''),
+							feedback: logParts[4].replaceFirst('^feedback=', '')
+						]
+					}
+				}
+				report.testcase.each { testCase ->
+					def failureNodes = testCase.failure
+					def skipped = testCase.skipped.size() > 0
+					def failed = failureNodes.size() > 0 || testCase.error.size() > 0
+					def failureNode = failureNodes.size() > 0 ? failureNodes[0] : (testCase.error.size() > 0 ? testCase.error[0] : null)
+					def message = failureNode == null ? '' : failureNode.@message.text()
+					def lowerMessage = message.toLowerCase()
+					def stage = lowerMessage.contains('retrieved context') || lowerMessage.contains('plausible procedure')
+						? 'Recuperação'
+						: (lowerMessage.contains('relevancy evaluator') || lowerMessage.contains('relevancyevaluator')
+							? 'Relevância da resposta' : (failed ? 'Execução' : '—'))
+					def caseId = testCase.@name.text().split(' - ')[0]
+					def relevancy = relevancyResults[caseId]
+					cases << [
+						name: testCase.@name.text(),
+						caseId: caseId,
+						status: failed ? 'FAILED' : (skipped ? 'SKIPPED' : 'PASSED'),
+						stage: stage,
+						seconds: (testCase.@time.text() ?: '0') as BigDecimal,
+						score: relevancy == null ? null : relevancy.score,
+						feedback: relevancy == null ? '' : relevancy.feedback,
+						message: message
+					]
+				}
+			}
+			def data = groovy.json.JsonOutput.toJson(cases).replace('</', '<\\/')
+			def template = file('src/main/resources/dashboard/evaluation-dashboard.html').getText('UTF-8')
+			def generatedAt = java.time.OffsetDateTime.now().toString()
+			def html = template
+				.replace('__EVALUATION_DATA__', data)
+				.replace('__GENERATED_AT__', generatedAt)
+				.replace('__EVALUATION_TASK_NAME__', evaluationTaskName)
+				.replace('__EVALUATOR_LABEL__', evaluatorLabel)
+				.replace('__EVALUATOR_NOTE__', evaluatorNote)
+			def output = dashboardFile.get().asFile
+			output.parentFile.mkdirs()
+			output.setText(html, 'UTF-8')
+			logger.lifecycle("RAG evaluation dashboard generated at ${output}")
+		}
+	}
+}
+
+registerEvaluationDashboard(
+		'evaluateRag',
+		'generateEvaluationDashboard',
+		'rag-evaluation',
+		'RelevancyEvaluator padrão',
+		'O score padrão é binário (1 ou 0); o Spring AI 2.0.1 retorna feedback vazio.'
+)
+
+registerEvaluationDashboard(
+		'evaluateRagDetailed',
+		'generateDetailedEvaluationDashboard',
+		'rag-evaluation-detailed',
+		'DetailedRelevancyEvaluator customizado',
+		'O score é binário (1 ou 0) e o feedback obrigatório explica o julgamento do modelo.'
+)

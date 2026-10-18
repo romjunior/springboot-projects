@@ -23,7 +23,7 @@ else
 fi
 
 # Configure mirroring policy
-rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
+rabbitmqctl set_policy ha-all ".*" '{"ha-mode":"all","ha-sync-mode":"manual"}'
 
 # Keep foreground process active ...
 tail -f /dev/null

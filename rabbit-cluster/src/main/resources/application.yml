@@ -5,7 +5,7 @@ spring:
     virtual:
       enabled: true
   rabbitmq:
-    addresses: localhost:5673,localhost:5674
+    addresses: localhost:5672
     username: ${RABBITMQ_DEFAULT_USER:guest}
     password: ${RABBITMQ_DEFAULT_PASS:guest}
     virtual-host: ${RABBITMQ_DEFAULT_VHOST:/}
@@ -21,7 +21,3 @@ management:
     web:
       exposure:
         include: health,info,metrics,prometheus,httptrace
-
-logging:
-  pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

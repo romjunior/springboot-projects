@@ -1,0 +1,14 @@
+ESTACIONAMENTO PORTO SEGURO - DADOS DE CONTATO PARA TESTE
+
+Este documento contém dados fictícios para testar o mascaramento de informações sensíveis no fluxo RAG.
+
+Contato principal: atendimento@portoseguroestacionamento.com.br
+E-mail financeiro: financeiro@portoseguroestacionamento.com.br
+E-mail alternativo: suporte.rag+teste@example.com
+
+Telefone fixo da recepção: (11) 3456-7890
+Telefone celular do atendimento: (11) 99999-8888
+Telefone com código do país: +55 11 98888-7777
+Telefone sem formatação: 11977776666
+
+Os dados acima são fictícios e devem aparecer mascarados nas informações enviadas ao modelo, por exemplo como [E-MAIL MASCARADO] e [TELEFONE MASCARADO].

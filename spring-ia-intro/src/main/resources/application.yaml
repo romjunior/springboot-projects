@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: intro-agent
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: example
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: update
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      client-type: jedis
+  ai:
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768
+      redis:
+        semantic-cache:
+          enabled: true
+          similarity-threshold: 0.90
+          index-name: sm-cache-v2
+          prefix: "spring-ia-intro:sm:cache:"
+    ollama:
+      embedding:
+        model: nomic-embed-text:latest
+        options:
+          dimensions: 768
+      chat:
+        options:
+          model: gemma4
+          # num ctx is the maximum number of tokens that the model can process in a single input. If the input exceeds this limit, it will be truncated or rejected.
+          num-ctx: 8000
+          # top-k sampling: only consider the top 10 most probable next tokens
+          top-k: 10
+          # top-p sampling: only consider the smallest set of tokens whose cumulative probability is at least 0.9
+          top-p: 0.9
+                # temperature: controls the randomness of the output (0.7 is a good balance between creativity and coherence)
+          temperature: 0.1
+                # num-predict: the maximum number of tokens to generate in the response (500 is a reasonable limit to avoid excessively long outputs)
+          num-predict: 1500
+        memory:
+          redis:
+            host: localhost
+            port: 6379
+
+logging:
+  level:
+    org:
+      springframework:
+        ai:
+          chat:
+            client: DEBUG
+          chat.cache.semantic: DEBUG
+          vectorstore.redis: DEBUG
+
+custom:
+  audit:
+    token-usage: true

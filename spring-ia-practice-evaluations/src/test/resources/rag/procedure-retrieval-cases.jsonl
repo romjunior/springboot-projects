@@ -1,0 +1,60 @@
+{"caseId":"Q001","query":"Como devo me preparar para uma endoscopia digestiva alta?","expectedServiceIds":["PROC-001"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q002","query":"Vou fazer aquele exame com câmera pela boca para olhar o estômago.","expectedServiceIds":["PROC-001"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q003","query":"Qual é o preparo para a colonoscopia?","expectedServiceIds":["PROC-002"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q004","query":"Preciso do exame com câmera que avalia todo o intestino grosso.","expectedServiceIds":["PROC-002"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q005","query":"A clínica realiza retossigmoidoscopia flexível?","expectedServiceIds":["PROC-003"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q006","query":"Meu pedido é para examinar somente o reto e a parte final do cólon.","expectedServiceIds":["PROC-003"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q007","query":"Preciso marcar ultrassom de abdome total.","expectedServiceIds":["PROC-004"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q008","query":"O pedido fala em avaliar a parte de cima e a parte de baixo da barriga no mesmo ultrassom.","expectedServiceIds":["PROC-004"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q009","query":"Onde faço ultrassonografia de abdome superior?","expectedServiceIds":["PROC-005"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q010","query":"Quero o ultrassom apenas da parte alta do abdome, não o total.","expectedServiceIds":["PROC-005"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q011","query":"Qual o preparo para ultrassonografia pélvica?","expectedServiceIds":["PROC-006"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q012","query":"É o ultrassom da pelve feito por fora e pediram para ficar com a bexiga cheia.","expectedServiceIds":["PROC-006"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q013","query":"Preciso agendar ultrassom transvaginal.","expectedServiceIds":["PROC-007"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q014","query":"Meu pedido diz ultrassom endovaginal e orientaram esvaziar a bexiga.","expectedServiceIds":["PROC-007"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q015","query":"A CareFlow faz ressonância magnética de crânio?","expectedServiceIds":["PROC-008"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q016","query":"Preciso do exame da cabeça que usa campo magnético e exige retirar metais.","expectedServiceIds":["PROC-008"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q017","query":"Quero marcar tomografia computadorizada de crânio.","expectedServiceIds":["PROC-009"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q018","query":"O pedido é para uma TC rápida da cabeça feita com raios X.","expectedServiceIds":["PROC-009"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q019","query":"Preciso de ressonância da coluna lombar.","expectedServiceIds":["PROC-010"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q020","query":"Qual exame da lombar usa campo magnético e não tem radiação?","expectedServiceIds":["PROC-010"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q021","query":"Quero marcar tomografia de coluna lombar.","expectedServiceIds":["PROC-011"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q022","query":"Meu pedido fala em TC da lombar com aquisição por raios X.","expectedServiceIds":["PROC-011"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q023","query":"Preciso agendar mamografia bilateral.","expectedServiceIds":["PROC-012"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q024","query":"Qual exame das duas mamas usa compressão e raios X?","expectedServiceIds":["PROC-012"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q025","query":"Onde faço ultrassonografia de mamas?","expectedServiceIds":["PROC-013"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q026","query":"Quero o exame das mamas feito com gel e sem radiação.","expectedServiceIds":["PROC-013"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q027","query":"Preciso fazer um eletrocardiograma em repouso.","expectedServiceIds":["PROC-014"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q028","query":"Quero aquele eletro rápido com fios no peito feito dentro da clínica.","expectedServiceIds":["PROC-014"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q029","query":"A clínica realiza ecocardiograma transtorácico?","expectedServiceIds":["PROC-015"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q030","query":"Preciso do ultrassom que mostra imagens e movimentos do coração.","expectedServiceIds":["PROC-015"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q031","query":"Quero instalar um Holter de 24 horas.","expectedServiceIds":["PROC-016"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q032","query":"Preciso ficar um dia com eletrodos no peito registrando os batimentos.","expectedServiceIds":["PROC-016"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q033","query":"Como funciona o MAPA de 24 horas?","expectedServiceIds":["PROC-017"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q034","query":"Vou usar uma braçadeira que mede minha pressão durante o dia e a noite.","expectedServiceIds":["PROC-017"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q035","query":"Preciso agendar uma espirometria.","expectedServiceIds":["PROC-018"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q036","query":"Onde faço a prova de função pulmonar, também chamada de teste do sopro?","expectedServiceIds":["PROC-018"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q037","query":"Quero marcar consulta com dermatologista.","expectedServiceIds":["PROC-019"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q038","query":"Preciso de uma consulta especializada em pele, cabelo e unhas.","expectedServiceIds":["PROC-019"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q039","query":"Quero uma consulta com clínico geral.","expectedServiceIds":["PROC-020"],"expectedOutcome":"MATCH","difficulty":"EASY"}
+{"caseId":"Q040","query":"Não sei qual especialidade procurar e quero uma avaliação médica inicial.","expectedServiceIds":["PROC-020"],"expectedOutcome":"MATCH","difficulty":"MEDIUM"}
+{"caseId":"Q041","query":"O exame é pela boca e não pelo intestino grosso.","expectedServiceIds":["PROC-001"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q042","query":"O médico pediu o exame completo do cólon, não apenas a parte final.","expectedServiceIds":["PROC-002"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q043","query":"Preciso avaliar só o trecho final do intestino e recebi um preparo localizado.","expectedServiceIds":["PROC-003"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q044","query":"No pedido está escrito abdome inteiro, incluindo regiões superior e inferior.","expectedServiceIds":["PROC-004"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q045","query":"É um exame externo da pelve e não pode esvaziar a bexiga antes.","expectedServiceIds":["PROC-006"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q046","query":"Quero imagem da cabeça sem radiação e tenho que responder perguntas sobre implantes.","expectedServiceIds":["PROC-008"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q047","query":"Preciso de uma imagem rápida da cabeça em um aparelho aberto como um anel.","expectedServiceIds":["PROC-009"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q048","query":"O exame das mamas que pediram não usa gel; ele faz compressão.","expectedServiceIds":["PROC-012"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q049","query":"Quero ver imagens do coração, não apenas registrar sua atividade elétrica.","expectedServiceIds":["PROC-015"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q050","query":"Preciso monitorar os batimentos por um dia, não a pressão arterial.","expectedServiceIds":["PROC-016"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q051","query":"O aparelho ficará no braço medindo a pressão por 24 horas, sem eletrodos no tórax.","expectedServiceIds":["PROC-017"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q052","query":"Já sei que a questão é de pele e quero ir direto ao especialista.","expectedServiceIds":["PROC-019"],"expectedOutcome":"MATCH","difficulty":"HARD"}
+{"caseId":"Q053","query":"Preciso fazer um ultrassom da barriga.","expectedServiceIds":["PROC-004","PROC-005"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q054","query":"Quero um exame de imagem da cabeça.","expectedServiceIds":["PROC-008","PROC-009"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q055","query":"Meu pedido fala apenas em exame da coluna lombar.","expectedServiceIds":["PROC-010","PROC-011"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q056","query":"Preciso fazer um exame do coração.","expectedServiceIds":["PROC-014","PROC-015","PROC-016","PROC-017"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q057","query":"Quero marcar um ultrassom da pelve.","expectedServiceIds":["PROC-006","PROC-007"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q058","query":"Preciso de um exame das mamas.","expectedServiceIds":["PROC-012","PROC-013"],"expectedOutcome":"AMBIGUOUS","difficulty":"HARD"}
+{"caseId":"Q059","query":"Quero verificar minha glicemia e hemoglobina glicada.","expectedServiceIds":[],"expectedOutcome":"NO_MATCH","difficulty":"HARD"}
+{"caseId":"Q060","query":"A clínica realiza radiografia do joelho?","expectedServiceIds":[],"expectedOutcome":"NO_MATCH","difficulty":"HARD"}

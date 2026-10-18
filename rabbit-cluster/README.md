@@ -15,6 +15,7 @@ Testar e demonstrar a **alta disponibilidade** de uma aplicação Spring Boot in
 - **Spring Boot 3.5.3**
 - **Spring AMQP** para integração com RabbitMQ
 - **RabbitMQ 3** com Management Plugin
+- **HAProxy** como Load Balancer
 - **Docker & Docker Compose** para orquestração do cluster
 - **Micrometer Tracing** para observabilidade
 
@@ -22,13 +23,14 @@ Testar e demonstrar a **alta disponibilidade** de uma aplicação Spring Boot in
 
 ### Docker Compose
 
-O cluster RabbitMQ é configurado com **3 nós** usando Docker Compose:
+O cluster RabbitMQ é configurado com **3 nós** + **HAProxy Load Balancer**:
 
 ```yaml
-# 3 nós RabbitMQ em cluster
-- rabbitmq1: Porta 5672 (AMQP) e 15672 (Management)
-- rabbitmq2: Porta 5673 (AMQP) 
-- rabbitmq3: Porta 5674 (AMQP)
+# HAProxy Load Balancer
+- haproxy: Porta 5672 (AMQP) e 15672 (Management) e 8404 (Stats)
+
+# 3 nós RabbitMQ em cluster (acesso via load balancer)
+- rabbitmq1, rabbitmq2, rabbitmq3: Acesso interno via HAProxy
 ```
 
 ### Script de Inicialização do Cluster
@@ -60,7 +62,8 @@ O **HA Mirroring** é **obrigatório** para alta disponibilidade porque:
 ```yaml
 spring:
   rabbitmq:
-    addresses: localhost:5673,localhost:5674  # Conecta nos nós 2 e 3
+    host: localhost
+    port: 5672  # Conecta via HAProxy Load Balancer
     connection-timeout: 30000
     requested-heartbeat: 30
     publisher-confirms: true
@@ -69,7 +72,7 @@ spring:
 
 ### Por que essa Configuração?
 
-1. **Múltiplos Endereços**: Se um nó falhar, Spring Boot tenta o próximo
+1. **Load Balancer**: HAProxy distribui conexões entre nós saudáveis
 2. **Connection Timeout**: Detecta falhas rapidamente (30s)
 3. **Heartbeat**: Monitora conexões ativas a cada 30s
 4. **Publisher Confirms**: Garante entrega das mensagens
@@ -98,8 +101,9 @@ docker-compose up -d
 
 ### 2. Verificar o Cluster
 
-Acesse o Management UI:
-- **Nó 1**: http://localhost:15672
+Acesse via Load Balancer:
+- **Management UI**: http://localhost:15672
+- **HAProxy Stats**: http://localhost:8404/stats
 
 Credenciais padrão: `guest/guest`
 
@@ -147,6 +151,7 @@ docker-compose start rabbitmq2
 
 A aplicação inclui:
 - **Spring Boot Actuator** para health checks
+- **HAProxy Stats** em http://localhost:8404/stats
 - **Micrometer Tracing** para rastreamento distribuído
 - **Métricas Prometheus** para monitoramento
 
