@@ -65,9 +65,12 @@ No diretório deste projeto:
 
 # Avaliação com decisão e justificativa obrigatórias.
 ./gradlew evaluateRagDetailed
+
+# Avaliação de factualidade da resposta contra os chunks recuperados.
+./gradlew evaluateRagFactChecking
 ```
 
-`./gradlew test` não chama a API principal nem o Ollama; ele exclui as duas suítes de avaliação ao vivo.
+`./gradlew test` não chama a API principal nem o Ollama; ele exclui as três suítes de avaliação ao vivo.
 
 ## Contrato com a API principal
 
@@ -95,12 +98,14 @@ Cada documento recuperado deve incluir `id`, `text` e `metadata`. O metadado `so
 | --- | --- | --- | --- |
 | `evaluateRag` | `RelevancyEvaluator` padrão do Spring AI | Score binário. Na versão 2.0.1, o feedback retornado pelo evaluator padrão fica vazio. | `build/reports/rag-evaluation/index.html` |
 | `evaluateRagDetailed` | `DetailedRelevancyEvaluator` do projeto | Exige JSON com decisão `YES` ou `NO` e feedback não vazio. O teste falha se a resposta do evaluator estiver fora desse contrato. | `build/reports/rag-evaluation-detailed/index.html` |
+| `evaluateRagFactChecking` | `FactCheckingEvaluator` padrão do Spring AI | Para `MATCH` e `AMBIGUOUS`, compara a resposta completa com a concatenação de todos os chunks recuperados. O evaluator padrão aprova ou reprova, sem score ou feedback. | `build/reports/rag-evaluation-fact-checking/index.html` |
 
-As duas suítes registram score e feedback no stdout do JUnit e no dashboard correspondente. Para recriar um dashboard sem chamar a API nem o Ollama:
+As suítes de relevância registram score e feedback no stdout do JUnit e no dashboard correspondente. A suíte factual registra o resultado de aprovação ou reprovação e a limitação do evaluator padrão. Para recriar um dashboard sem chamar a API nem o Ollama:
 
 ```bash
 ./gradlew generateEvaluationDashboard
 ./gradlew generateDetailedEvaluationDashboard
+./gradlew generateFactCheckingEvaluationDashboard
 ```
 
 ## Executar casos específicos
@@ -110,6 +115,7 @@ Informe IDs separados por vírgula para investigar uma falha:
 ```bash
 ./gradlew -PevaluationCaseIds=Q005 evaluateRag
 ./gradlew -PevaluationCaseIds=Q005,Q006 evaluateRagDetailed
+./gradlew -PevaluationCaseIds=Q005,Q059 evaluateRagFactChecking
 ```
 
 Também é possível usar `EVALUATION_CASE_IDS`.
@@ -136,8 +142,9 @@ OLLAMA_EVALUATOR_MODEL=gemma4 \
 
 - Casos `MATCH`: o arquivo do procedimento esperado deve aparecer entre os documentos recuperados.
 - Casos `AMBIGUOUS`: ao menos um procedimento plausível deve aparecer entre os documentos recuperados.
-- Casos `NO_MATCH`: ajudam a acompanhar abstenções e falsos positivos; exigem análise da resposta e do resultado da suíte.
+- Casos `NO_MATCH`: na suíte factual, não usam o `FactCheckingEvaluator`. A resposta deve reconhecer que não há informação ou correspondência segura na base, pedir detalhe adicional ou esclarecimento e não afirmar que a clínica realiza o procedimento solicitado.
 - A relevância da resposta é julgada usando a pergunta, os chunks recuperados e a resposta produzida pela aplicação principal.
+- A factualidade usa a resposta completa como alegação e todos os chunks recuperados como evidência. O `FactCheckingEvaluator` do Spring AI 2.0.1 não expõe score nem feedback; por isso o dashboard mostra score indisponível.
 
 O julgamento por modelo pode variar. Para comparar versões do RAG, mantenha fixos o corpus, a divisão dos documentos, o modelo de embeddings, `topK`, limiar de similaridade, prompt e modelo avaliador.
 
@@ -146,3 +153,10 @@ O julgamento por modelo pode variar. Para comparar versões do RAG, mantenha fix
 Os casos ficam em `src/test/resources/rag/procedure-retrieval-cases.jsonl`. Eles são uma cópia de `spring-ia-practice/src/test/resources/rag/procedure-retrieval-cases.jsonl` e não devem ser ingeridos no vector store.
 
 Ao alterar os casos no projeto principal, copie a alteração para este projeto. Os IDs `PROC-001` a `PROC-020` devem continuar alinhados aos prefixos `01-` a `20-` dos arquivos de procedimentos.
+
+## Referências
+
+- **Paper — [RAGAs: Automated Evaluation of Retrieval Augmented Generation](https://aclanthology.org/2024.eacl-demo.16/)**. Shahul Es, Jithin James, Luis Espinosa Anke e Steven Schockaert. EACL 2024, System Demonstrations, páginas 150–158. Apresenta as métricas de fidelidade ao contexto (*faithfulness*), relevância da resposta e relevância do contexto. [PDF](https://aclanthology.org/2024.eacl-demo.16.pdf).
+- **Framework — [Ragas](https://docs.ragas.io/)**. Referência para técnicas de avaliação de RAG e evolução das métricas propostas no paper. Consulte o [catálogo de métricas](https://docs.ragas.io/en/latest/concepts/metrics/available_metrics/) e o [código-fonte](https://github.com/explodinggradients/ragas).
+
+O Ragas é uma referência metodológica para a evolução das avaliações deste projeto. As suítes atuais são implementadas em Java com JUnit e Spring AI, sem dependência do framework Ragas.

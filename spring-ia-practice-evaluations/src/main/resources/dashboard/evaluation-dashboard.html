@@ -57,6 +57,8 @@
     .dot { width: 8px; height: 8px; border-radius: 50%; background: #aab9bf; }
     .dot.retrieval { background: #cf8a20; }
     .dot.answer { background: #b94754; }
+    .dot.factuality { background: #7756a8; }
+    .dot.abstention { background: #087e78; }
     .stage-count { font-weight: 750; }
     .results { overflow: hidden; }
     .results-head { display: flex; justify-content: space-between; align-items: end; gap: 18px; padding: 21px 22px 16px; }
@@ -100,14 +102,14 @@
       <div class="generated">Gerado em<br><strong>__GENERATED_AT__</strong></div>
     </header>
     <h1>Dashboard de avaliações RAG</h1>
-    <p class="intro">Resumo da recuperação de procedimentos e da relevância das respostas do agente, calculado a partir dos resultados da última execução com <strong>__EVALUATOR_LABEL__</strong>.</p>
+    <p class="intro">Resumo da última suíte de avaliação RAG, calculado a partir dos resultados com <strong>__EVALUATOR_LABEL__</strong>.</p>
 
     <section class="summary" aria-label="Resumo">
       <article class="card metric"><div class="metric-label">Casos executados</div><div class="metric-value" id="total">0</div><div class="metric-note" id="duration-total">Duração total: 0 s</div></article>
-      <article class="card metric pass"><div class="metric-label">Aprovados</div><div class="metric-value" id="passed">0</div><div class="metric-note">Recuperação esperada e relevância aceitas</div></article>
+      <article class="card metric pass"><div class="metric-label">Aprovados</div><div class="metric-value" id="passed">0</div><div class="metric-note">Casos aprovados pela suíte</div></article>
       <article class="card metric fail"><div class="metric-label">Falhas</div><div class="metric-value" id="failed">0</div><div class="metric-note" id="failure-note">Nenhuma falha</div></article>
       <article class="card metric rate"><div class="metric-label">Taxa de aprovação</div><div class="metric-value" id="rate">—</div><div class="metric-note">Aprovados ÷ casos executados</div></article>
-      <article class="card metric score"><div class="metric-label">Score médio</div><div class="metric-value" id="average-score">—</div><div class="metric-note">Média dos casos julgados · escala 0–1</div></article>
+      <article class="card metric score"><div class="metric-label">__SCORE_METRIC_LABEL__</div><div class="metric-value" id="average-score">—</div><div class="metric-note">__SCORE_METRIC_NOTE__</div></article>
     </section>
 
     <section class="overview">
@@ -123,6 +125,8 @@
         <div class="stage-list">
           <div class="stage-row"><span class="stage-label"><i class="dot retrieval"></i>Recuperação</span><span class="stage-count" id="retrieval-failures">0</span></div>
           <div class="stage-row"><span class="stage-label"><i class="dot answer"></i>Relevância da resposta</span><span class="stage-count" id="answer-failures">0</span></div>
+          <div class="stage-row"><span class="stage-label"><i class="dot factuality"></i>Factualidade da resposta</span><span class="stage-count" id="factuality-failures">0</span></div>
+          <div class="stage-row"><span class="stage-label"><i class="dot abstention"></i>Abstenção</span><span class="stage-count" id="abstention-failures">0</span></div>
           <div class="stage-row"><span class="stage-label"><i class="dot"></i>Execução / outros</span><span class="stage-count" id="execution-failures">0</span></div>
         </div>
       </article>
@@ -143,7 +147,7 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Caso</th><th>Status</th><th>Etapa</th><th>Score</th><th>Feedback do avaliador</th><th>Duração</th><th>Detalhe</th></tr></thead>
+          <thead><tr><th>Caso</th><th>Status</th><th>Etapa</th><th>Score</th><th>Feedback / observação</th><th>Duração</th><th>Detalhe</th></tr></thead>
           <tbody id="case-rows"></tbody>
         </table>
         <div class="empty" id="empty-state" hidden>Nenhum caso corresponde ao filtro.</div>
@@ -176,6 +180,8 @@
     document.getElementById('bar-label').textContent = total ? rate + '% aprovados' : 'Sem resultados';
     document.getElementById('retrieval-failures').textContent = failCount('Recuperação');
     document.getElementById('answer-failures').textContent = failCount('Relevância da resposta');
+    document.getElementById('factuality-failures').textContent = failCount('Factualidade da resposta');
+    document.getElementById('abstention-failures').textContent = failCount('Abstenção');
     document.getElementById('execution-failures').textContent = evaluations.filter(item => item.status === 'FAILED' && item.stage === 'Execução').length;
 
     const body = document.getElementById('case-rows');
@@ -209,6 +215,7 @@
         addCell(row, item.stage, 'stage-pill');
         addCell(row, item.score === null || item.score === undefined ? '—' : Number(item.score).toFixed(2), 'score-cell');
         const feedback = item.feedback
+          || (item.resultType === 'FACT_CHECKING_RESULT' ? 'Feedback indisponível: FactCheckingEvaluator padrão não retorna justificativa.' : '')
           || (item.score !== null && item.score !== undefined ? 'Feedback vazio: RelevancyEvaluator 2.0.1 não retorna justificativa.' : '')
           || (item.stage === 'Recuperação' ? 'A avaliação da resposta não foi executada porque a verificação de recuperação falhou.' : '—');
         addCell(row, feedback, 'feedback-cell');
